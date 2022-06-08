@@ -1,0 +1,32 @@
+logging:
+    level:
+        com:
+            learn:
+                '*': info
+server:
+    port: 8000
+    tomcat:
+        port-header: X-Forwarded-Port
+        protocol-header: x-forwarded-proto
+        remote-ip-header: x-forwarded-for
+        uri-encoding: utf-8
+        use-relative-redirects: true
+    use-forward-headers: true
+spring:
+    freemarker:
+        cache: false
+        templateLoaderPath: classpath:/templates/
+    mvc:
+        static-path-pattern: /**
+    output:
+        ansi:
+            enabled: detect
+    resources:
+        static-locations: classpath:/META-INF/resources/,classpath:/resources/,classpath:/static/,classpath:/public/
+    servlet:
+        multipart:
+            max-file-size: -1
+            max-request-size: -1
+web:
+    file-path: d:/temp/file/
+    qrcode-path: d:/temp/qrcode/
