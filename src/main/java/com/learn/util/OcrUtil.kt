@@ -1,30 +1,21 @@
-package com.learn.util;
+package com.learn.util
 
-import com.baidu.aip.ocr.AipOcr;
-import com.learn.Entity.OcrClient;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import com.learn.Entity.OcrClient
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Configuration
 
-import java.util.HashMap;
 @Configuration
-public class OcrUtil {
-
+open class OcrUtil {
     @Autowired
-    private OcrClient client;
-
-    public  String getOcr(byte[] file) {
-
-
-        HashMap<String, String> options = new HashMap<String, String>();
-        options.put("language_type", "CHN_ENG");
-        options.put("detect_direction", "true");
-        options.put("detect_language", "true");
-        options.put("probability", "true");
-
-
-        JSONObject res = client.basicGeneral(file, options);
-        System.out.println(res.toString());
-        return res.toString();
+    private val client: OcrClient? = null
+    fun getOcr(file: ByteArray?): String {
+        val options = HashMap<String, String>()
+        options["language_type"] = "CHN_ENG"
+        options["detect_direction"] = "true"
+        options["detect_language"] = "true"
+        options["probability"] = "true"
+        val res = client!!.basicGeneral(file, options)
+        println(res.toString())
+        return res.toString()
     }
 }

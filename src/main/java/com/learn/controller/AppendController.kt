@@ -1,78 +1,69 @@
-package com.learn.controller;
+package com.learn.controller
 
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
-import cn.hutool.log.StaticLog;
-import com.learn.util.OcrUtil;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import cn.hutool.json.JSONUtil
+import cn.hutool.log.StaticLog
+import com.learn.util.OcrUtil
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.ui.Model
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.io.IOException
+import java.io.UnsupportedEncodingException
+import java.nio.charset.Charset
+import java.util.*
+import javax.servlet.http.HttpServletResponse
 
 /**
  * @author Administrator
  */
 @RestController
-public class AppendController {
-
+class AppendController {
     @Autowired
-    private OcrUtil ocrUtil;
-
-    @RequestMapping(value = "/wiki/")
-    public void getWiki(HttpServletResponse response) throws IOException {
-
-        response.sendRedirect("http://www.baidu.com");
+    private val ocrUtil: OcrUtil? = null
+    @RequestMapping(value = ["/wiki/"])
+    @Throws(IOException::class)
+    fun getWiki(response: HttpServletResponse) {
+        response.sendRedirect("http://www.baidu.com")
     }
 
+    @get:GetMapping(value = ["/ocr"])
+    val ocr: String
+        get() = "ocr"
 
-    @GetMapping(value = "/ocr")
-    public String getOcr() {
-        return "ocr";
-    }
-
-    @PostMapping(value = "/ocr/")
-    public String postOcr(@RequestParam("file") MultipartFile file, Model map) throws IOException {
-        String result = ocrUtil.getOcr(file.getBytes());
-        JSONObject js = JSONUtil.parseObj(result);
-        StaticLog.info(js.toString());
-        JSONArray jsarray = js.getJSONArray("words_result");
-        StringBuffer resultOcr = new StringBuffer();
-        for (int i = 0; i < jsarray.size(); i++) {
-            JSONObject jsWord = JSONUtil.parseObj(jsarray.get(i));
-            resultOcr = resultOcr.append(jsWord.get("words") + "<br>");
+    @PostMapping(value = ["/ocr/"])
+    @Throws(IOException::class)
+    fun postOcr(@RequestParam("file") file: MultipartFile, map: Model): String {
+        val result = ocrUtil!!.getOcr(file.bytes)
+        val js = JSONUtil.parseObj(result)
+        StaticLog.info(js.toString())
+        val jsarray = js.getJSONArray("words_result")
+        var resultOcr = StringBuffer()
+        for (i in jsarray.indices) {
+            val jsWord = JSONUtil.parseObj(jsarray[i])
+            resultOcr = resultOcr.append(jsWord["words"].toString() + "<br>")
         }
-        map.addAttribute("ocr", resultOcr.toString());
-        return "ocr";
+        map.addAttribute("ocr", resultOcr.toString())
+        return "ocr"
     }
 
     @ResponseBody
-    @RequestMapping(value = "/es")
-    public Map<String, String> cryption(@RequestParam Map<String, Object> params) throws IOException {
-
-        String un = params.get("un").toString();
-        String pd = params.get("pd").toString();
-        String auth = String.format("%s:%s", un, pd);
-        String auth1 = baseCry(auth);
-        String headerAuth = "Authorization: Basic " + auth1;
-        String authString = baseCry(headerAuth);
-        Map<String, String> rst = new HashMap<>(4);
-        rst.put("header", headerAuth);
-        rst.put("stringAuth", authString);
-        return rst;
+    @RequestMapping(value = ["/es"])
+    @Throws(IOException::class)
+    fun cryption(@RequestParam params: Map<String?, Any>): Map<String, String> {
+        val un = params["un"].toString()
+        val pd = params["pd"].toString()
+        val auth = String.format("%s:%s", un, pd)
+        val auth1 = baseCry(auth)
+        val headerAuth = "Authorization: Basic $auth1"
+        val authString = baseCry(headerAuth)
+        val rst: MutableMap<String, String> = HashMap(4)
+        rst["header"] = headerAuth
+        rst["stringAuth"] = authString
+        return rst
     }
 
-    public String baseCry(String s) throws UnsupportedEncodingException {
-        String r = new String(Base64.getEncoder().encode(s.getBytes("utf-8")), "utf-8");
-        return r;
+    @Throws(UnsupportedEncodingException::class)
+    fun baseCry(s: String): String {
+        return String(Base64.getEncoder().encode(s.toByteArray(charset("utf-8"))), Charset.forName("utf-8"))
     }
 }
