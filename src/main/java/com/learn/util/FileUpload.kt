@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.*
 import java.net.URLEncoder
+import java.text.DecimalFormat
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 import javax.servlet.http.HttpServletResponse
@@ -30,13 +31,12 @@ class FileUpload {
         val ls = FileUtil.listFileNames(directoryPath)
         //        StaticLog.info(ls.toString());
         var listr = mutableListOf<Map<String, String>>()
-        for (s in ls) {
-
+        for (fileName in ls) {
             var temp = hashMapOf<String, String>()
-            temp["name"] = s
-            temp["url"] = "/download/$s"
+            temp["name"] = fileName
+            temp["url"] = "/download/$fileName"
             temp["date"] = "2021-12-20"
-            temp["size"] = FileUtil.size(File(directoryPath + File.separator + s)).toString()
+            temp["size"] = getSize(FileUtil.size(File(directoryPath + File.separator + fileName)).toString())
             listr.add(temp)
         }
         return listr
@@ -75,4 +75,27 @@ class FileUpload {
             return m.replaceAll("").trim { it <= ' ' }
         }
     }
+
+
+    fun getSize(o: String?): String {
+        val i = Integer.valueOf(o).toLong()
+        var result = ""
+        val kb: Long = 1024
+        val mb = kb * 1024
+        val gb = mb * 1024
+
+        /*实现保留小数点两位*/
+        val df = DecimalFormat("#.00")
+        result = if (i >= gb) {
+            df.format((i.toFloat() / gb).toDouble()) + "GB"
+        } else if (i >= mb) {
+            df.format((i.toFloat() / mb).toDouble()) + "MB"
+        } else if (i >= kb) {
+            String.format("%.2f", i.toFloat() / kb) + "KB"
+        } else {
+            i.toString() + "B"
+        }
+        return result
+    }
+
 }

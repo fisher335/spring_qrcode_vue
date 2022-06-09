@@ -1,30 +1,25 @@
-package com.learn.util;
+package com.learn.util
 
-import com.learn.Entity.Result;
-import com.learn.Entity.ResultEnum;
+import com.learn.Entity.Result
+import com.learn.Entity.ResultEnum
 
-public class ResultUtil {
+object ResultUtil {
+    /**成功且带数据 */
+    /**成功但不带数据 */
+    @JvmOverloads
+    fun success(data: Any? = null): Result<*> {
+        val result: Result<*> = Result<Any?>()
+        result.code = ResultEnum.SUCCESS.code
+        result.msg = ResultEnum.SUCCESS.msg
+        result.setData(data)
+        return result
+    }
 
-
-        /**成功且带数据**/
-        public static Result success(Object object){
-            Result result = new Result();
-            result.setCode(ResultEnum.SUCCESS.getCode());
-            result.setMsg(ResultEnum.SUCCESS.getMsg());
-            result.setData(object);
-            return result;
-        }
-        /**成功但不带数据**/
-        public static Result success(){
-
-            return success(null);
-        }
-        /**失败**/
-        public static Result error(Integer code,String msg){
-            Result result = new Result();
-            result.setCode(code);
-            result.setMsg(msg);
-            return result;
-        }
-
+    /**失败 */
+    fun error(code: Int?, msg: String?): Result<*> {
+        val result: Result<*> = Result<Any?>()
+        result.code = code
+        result.msg = msg
+        return result
+    }
 }

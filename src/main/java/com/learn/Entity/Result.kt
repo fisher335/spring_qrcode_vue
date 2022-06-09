@@ -13,8 +13,8 @@ class Result<T> {
         this.data = data
     }
 
-    fun setData(data: T) {
-        this.data = data
+    fun setData(data: Any?) {
+        this.data = data as T?
     }
 
     override fun toString(): String {
